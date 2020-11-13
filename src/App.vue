@@ -1,6 +1,16 @@
 <template>
   <div id="app">
-    <MarketPrice v-bind="{ formatPrice, formatPercent, isNegPercent, coins1, coins2 }" />
+    <MarketPrice
+      v-bind="{
+        log,
+        updateCoinName,
+        formatPrice,
+        formatPercent,
+        isNegPercent,
+        coins1,
+        coins2,
+      }"
+    />
   </div>
 </template>
 
@@ -14,6 +24,14 @@ export default {
   },
   data() {
     return {
+      coinNames: [
+        "bitcoin",
+        "ethereum",
+        "molecular-future",
+        "hyperdao",
+        "hshare",
+      ],
+      newCoinName: "",
       coins: {
         bitcoin: {
           name: "BTC",
@@ -23,6 +41,12 @@ export default {
         },
         ethereum: {
           name: "ETH",
+          usd: 0.0,
+          cny: 0.0,
+          usd_24h_change: 0.0,
+        },
+        select: {
+          name: "-",
           usd: 0.0,
           cny: 0.0,
           usd_24h_change: 0.0,
@@ -53,6 +77,7 @@ export default {
       let values = [];
       values.push(this.coins.bitcoin);
       values.push(this.coins.ethereum);
+      values.push(this.coins.select);
       return values;
     },
     coins2: function () {
@@ -65,7 +90,45 @@ export default {
   },
   methods: {
     log(message) {
-      console.table(message);
+      console.log(message);
+    },
+    updateCoinName(name) {
+      this.newCoinName = name;
+      this.coinNames = [
+        "bitcoin",
+        "ethereum",
+        "molecular-future",
+        "hyperdao",
+        "hshare",
+        name,
+      ];
+      this.updatePrice();
+    },
+    async updatePrice() {
+      let url =
+        "https://api.coingecko.com/api/v3/simple/price?ids=" +
+        this.coinNames.join() +
+        "&vs_currencies=usd,cny&include_24hr_change=true";
+      let response = await fetch(url).catch((error) => {
+        console.log(error);
+      });
+      if (response === undefined) {
+        return;
+      }
+      let data = await response.json();
+      this.coinNames.forEach((coinName) => {
+        if (Object.prototype.hasOwnProperty.call(data, coinName) === true) {
+          if (coinName === this.newCoinName) {
+            this.coins['select'].usd = data[coinName].usd;
+            this.coins['select'].cny = data[coinName].cny;
+            this.coins['select'].usd_24h_change = data[coinName].usd_24h_change;
+          } else {
+            this.coins[coinName].usd = data[coinName].usd;
+            this.coins[coinName].cny = data[coinName].cny;
+            this.coins[coinName].usd_24h_change = data[coinName].usd_24h_change;
+          }
+        }
+      });
     },
     formatPrice(num) {
       if (
@@ -90,32 +153,10 @@ export default {
     },
     isNegPercent(num) {
       return num.toString().includes("-");
-    }
+    },
   },
-  async created() {
-    let coinNames = [
-      "bitcoin",
-      "ethereum",
-      "molecular-future",
-      "hyperdao",
-      "hshare",
-    ];
-    let url =
-      "https://api.coingecko.com/api/v3/simple/price?ids="+coinNames.join()+"&vs_currencies=usd,cny&include_24hr_change=true";
-    let response = await fetch(url).catch((error) => {
-      console.log(error);
-    });
-    if (response === undefined) {
-      return;
-    }
-    let data = await response.json();
-    coinNames.forEach((coinName) => {
-      if (Object.prototype.hasOwnProperty.call(data, coinName) === true) {
-        this.coins[coinName].usd = data[coinName].usd;
-        this.coins[coinName].cny = data[coinName].cny;
-        this.coins[coinName].usd_24h_change = data[coinName].usd_24h_change;
-      }
-    });
+  created() {
+    this.updatePrice();
   },
 };
 </script>

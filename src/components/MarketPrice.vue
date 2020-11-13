@@ -2,10 +2,17 @@
   <div>
     <h2>币价行情</h2>
     <div class="container">
-      <div v-for="coin in coins1" :key="coin.id">
+      <div v-for="(coin, key) in coins1" :key="coin.name">
         <table>
           <tr>
-            <td v-html="coin.name"></td>
+            <td v-if="key !== 2" v-html="coin.name"></td>
+            <td v-if="key === 2">
+              <select v-model="selectedCoinName">
+                <option disabled value="">Please Choose One</option>
+                <option value="dogecoin">D</option>
+                <option value="chicken">C</option>
+              </select>
+            </td>
           </tr>
           <tr>
             <td v-html="'$ ' + formatPrice(coin.usd)"></td>
@@ -27,7 +34,7 @@
     </div>
     <br /><br />
     <div class="container">
-      <div v-for="coin in coins2" :key="coin.id">
+      <div v-for="coin in coins2" :key="coin.name">
         <table>
           <tr>
             <td v-html="coin.name"></td>
@@ -57,11 +64,23 @@
 export default {
   name: "MarketPrice",
   props: {
+    log: Function,
+    updateCoinName: Function,
     formatPrice: Function,
     formatPercent: Function,
     isNegPercent: Function,
     coins1: Array,
     coins2: Array,
+  },
+  data() {
+    return {
+      selectedCoinName: "",
+    };
+  },
+  watch: {
+    selectedCoinName: function (newValue) {
+      this.updateCoinName(newValue);
+    },
   },
 };
 </script>
@@ -88,5 +107,8 @@ td {
 }
 .td-red {
   color: #FF0000;
+}
+select {
+  text-indent: 50%;
 }
 </style>
