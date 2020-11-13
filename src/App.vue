@@ -9,6 +9,7 @@
         isNegPercent,
         coins1,
         coins2,
+        coinList,
       }"
     />
   </div>
@@ -24,6 +25,7 @@ export default {
   },
   data() {
     return {
+      coinList: [],
       coinNames: [
         "bitcoin",
         "ethereum",
@@ -104,6 +106,16 @@ export default {
       ];
       this.updatePrice();
     },
+    async getCoinList() {
+      let url = "https://api.coingecko.com/api/v3/coins/list";
+      let response = await fetch(url).catch((error) => {
+        console.log(error);
+      });
+      if (response === undefined) {
+        return;
+      }
+      this.coinList = await response.json();
+    },
     async updatePrice() {
       let url =
         "https://api.coingecko.com/api/v3/simple/price?ids=" +
@@ -119,13 +131,25 @@ export default {
       this.coinNames.forEach((coinName) => {
         if (Object.prototype.hasOwnProperty.call(data, coinName) === true) {
           if (coinName === this.newCoinName) {
-            this.coins['select'].usd = data[coinName].usd;
-            this.coins['select'].cny = data[coinName].cny;
-            this.coins['select'].usd_24h_change = data[coinName].usd_24h_change;
+            if (data[coinName].usd !== null) {
+              this.coins["select"].usd = data[coinName].usd;
+            }
+            if (data[coinName].cny !== null) {
+              this.coins["select"].cny = data[coinName].cny;
+            }
+            if (data[coinName].usd_24h_change !== null) {
+              this.coins["select"].usd_24h_change = data[coinName].usd_24h_change;
+            }
           } else {
-            this.coins[coinName].usd = data[coinName].usd;
-            this.coins[coinName].cny = data[coinName].cny;
-            this.coins[coinName].usd_24h_change = data[coinName].usd_24h_change;
+            if (data[coinName].usd !== null) {
+              this.coins[coinName].usd = data[coinName].usd;
+            }
+            if (data[coinName].cny !== null) {
+              this.coins[coinName].cny = data[coinName].cny;
+            }
+            if (data[coinName].usd_24h_change !== null) {
+              this.coins[coinName].usd_24h_change = data[coinName].usd_24h_change;
+            }
           }
         }
       });
@@ -156,6 +180,7 @@ export default {
     },
   },
   created() {
+    this.getCoinList();
     this.updatePrice();
   },
 };

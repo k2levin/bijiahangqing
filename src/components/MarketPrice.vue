@@ -8,9 +8,14 @@
             <td v-if="key !== 2" v-html="coin.name"></td>
             <td v-if="key === 2">
               <select v-model="selectedCoinName">
-                <option disabled value="">Please Choose One</option>
-                <option value="dogecoin">D</option>
-                <option value="chicken">C</option>
+                <option disabled value="">-</option>
+                <option
+                  v-for="coin in coinList"
+                  :key="coin.id"
+                  :value="coin.id"
+                >
+                  {{ coin.symbol.toUpperCase() }}
+                </option>
               </select>
             </td>
           </tr>
@@ -71,6 +76,7 @@ export default {
     isNegPercent: Function,
     coins1: Array,
     coins2: Array,
+    coinList: Array,
   },
   data() {
     return {
@@ -110,5 +116,9 @@ td {
 }
 select {
   text-indent: 50%;
+  width: 130px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 </style>
