@@ -115,6 +115,7 @@ export default {
         return;
       }
       this.coinList = await response.json();
+      this.coinList = this.sortCoinList(this.coinList);
     },
     async updatePrice() {
       let url =
@@ -138,7 +139,8 @@ export default {
               this.coins["select"].cny = data[coinName].cny;
             }
             if (data[coinName].usd_24h_change !== null) {
-              this.coins["select"].usd_24h_change = data[coinName].usd_24h_change;
+              this.coins["select"].usd_24h_change =
+                data[coinName].usd_24h_change;
             }
           } else {
             if (data[coinName].usd !== null) {
@@ -148,7 +150,8 @@ export default {
               this.coins[coinName].cny = data[coinName].cny;
             }
             if (data[coinName].usd_24h_change !== null) {
-              this.coins[coinName].usd_24h_change = data[coinName].usd_24h_change;
+              this.coins[coinName].usd_24h_change =
+                data[coinName].usd_24h_change;
             }
           }
         }
@@ -177,6 +180,19 @@ export default {
     },
     isNegPercent(num) {
       return num.toString().includes("-");
+    },
+    sortCoinList(list) {
+      list.sort(function compare(a, b) {
+        if (a.symbol.toUpperCase() < b.symbol.toUpperCase()) {
+          return -1;
+        }
+        if (a.symbol.toUpperCase() > b.symbol.toUpperCase()) {
+          return 1;
+        }
+        return 0;
+      });
+
+      return list;
     },
   },
   created() {
