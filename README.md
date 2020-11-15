@@ -1,4 +1,7 @@
-# bijiahangqing
+# bijiahangqing - 币价行情
+
+view the demo at
+https://bijiahangqing.s3-ap-southeast-1.amazonaws.com/index.html
 
 ## Project setup
 ```
