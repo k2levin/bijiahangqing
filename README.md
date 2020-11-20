@@ -23,5 +23,10 @@ npm run build
 npm run lint
 ```
 
+### Testing using Cypress
+```
+docker run -it --rm -v $PWD:/e2e -w /e2e --network="host" --entrypoint=cypress cypress/included:5.6.0 run --browser chrome --config baseUrl=http://localhost:8080
+```
+
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).

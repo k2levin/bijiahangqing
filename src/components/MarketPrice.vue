@@ -15,7 +15,7 @@
           </td>
         </tr>
         <tr>
-          <td v-html="'$ ' + formatPrice(coin.usd)"></td>
+          <td v-html="'$ ' + formatPrice(coin.usd)" :id="key === 2 ? 'selected_usd_price' : ''"></td>
         </tr>
         <tr>
           <td v-html="'¥ ' + formatPrice(coin.cny)"></td>
